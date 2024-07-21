@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-
 public class AuthControllers implements Initializable {
     @FXML
     private Button loginButton;
@@ -26,23 +25,32 @@ public class AuthControllers implements Initializable {
     private TextField usernameInput;
     @FXML
     private TextField passwordInput;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loginButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                String username = usernameInput.getText();
+                String password = passwordInput.getText();
+
+                // Debugging lines
+                System.out.println("Username: " + username);
+                System.out.println("Password: " + password);
+
                 AuthService authService = new AuthService();
-                System.out.println(usernameInput.getText() + " " + passwordInput.getText());
-                String token = authService.login(usernameInput.getText(),passwordInput.getText());
-                System.out.println(token);
-                if (token == null || token.isEmpty()){
+                String token = authService.login(username, password);
+
+                // Debugging line
+                System.out.println("Token: " + token);
+
+                if (token == null || token.isEmpty()) {
                     System.out.println("Combinaison Incorrecte");
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setContentText("Combinaison Incorrecte");
                     alert.show();
-                }
-                else{
-                    System.out.println(token);
+                } else {
+                    System.out.println("Token: " + token);
                     Parent root = null;
                     try {
                         root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("main_menu.fxml")));
@@ -57,9 +65,4 @@ public class AuthControllers implements Initializable {
             }
         });
     }
-
-
-
-
 }
-
