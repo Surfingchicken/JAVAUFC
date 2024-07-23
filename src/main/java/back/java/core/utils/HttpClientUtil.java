@@ -41,7 +41,7 @@ public class HttpClientUtil {
         }
 
         int responseCode = conn.getResponseCode();
-        System.out.println("HTTP Response Code: " + responseCode);
+        //System.out.println("HTTP Response Code: " + responseCode);
 
         if (responseCode >= 200 && responseCode < 300) {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
@@ -77,6 +77,11 @@ public class HttpClientUtil {
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = payload.getBytes("utf-8");
             os.write(input, 0, input.length);
+        }
+        catch (IOException e) {
+            System.err.println("Error occurred while sending payload: " + e.getMessage());
+            e.printStackTrace();
+            throw new IOException("Failed to send POST request payload", e); // Re-throw with context
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));

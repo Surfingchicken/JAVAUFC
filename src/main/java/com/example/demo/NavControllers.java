@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -16,14 +17,19 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class NavControllers implements Initializable {
+    @FXML
+    private Label identificationLabel;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        UserSession session = UserSession.getInstance();
+        String username = session.getUsername();
+        identificationLabel.setText( username );
+    }
 
     @FXML
     private SplitPane mainSplitPane;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialization code can go here if needed
-    }
 
     @FXML
     public void navListEmployees(ActionEvent event) throws IOException {

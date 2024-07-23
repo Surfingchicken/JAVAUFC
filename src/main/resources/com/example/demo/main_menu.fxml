@@ -31,7 +31,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Nom Prenom - Rôle">
+                              <Label fx:id="identificationLabel" text="Nom Prenom - Rôle">
                                  <font>
                                     <Font name="Kailasa Bold" size="14.0" />
                                  </font>

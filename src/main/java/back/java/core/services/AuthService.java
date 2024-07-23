@@ -1,11 +1,12 @@
 package back.java.core.services;
 
+import back.java.core.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import back.java.core.utils.HttpClientUtil;
 import back.java.core.utils.TokenManager;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-import java.util.Map;
 
 public class AuthService {
 
@@ -16,31 +17,29 @@ public class AuthService {
         this.objectMapper = new ObjectMapper();
     }
 
-    public String login(String username, String password) {
+    public String login(String username, String password) throws Exception {
         try {
             String payload = objectMapper.writeValueAsString(new LoginRequest(username, password));
-            System.out.println("Login Payload: " + payload);
+            //System.out.println("Login Payload: " + payload);
             String response = HttpClientUtil.sendPostRequest(API_URL + "/auth/login", payload, null);
-            System.out.println("Login Response: " + response);
+            //System.out.println("Login Response: " + response);
             LoginResponse loginResponse = objectMapper.readValue(response, LoginResponse.class);
             String token = loginResponse.getToken();
-            System.out.println("Token: " + token);
+            //System.out.println("Token: " + token);
             TokenManager.getInstance().setToken(token);
             return token;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new Exception("Login failed: " + e.getMessage(), e);
         }
     }
 
-    public String signup(String username, String email, String password) {
+    public String signup(String username, String email, String password) throws Exception {
         try {
             String payload = objectMapper.writeValueAsString(new SignupRequest(username, email, password));
             HttpClientUtil.sendPostRequest(API_URL + "/auth/signup", payload, null);
-            return login(username, password);
+            return login(username, password); // Automatically log in after sign up
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new Exception("Signup failed: " + e.getMessage(), e);
         }
     }
 
@@ -63,16 +62,21 @@ public class AuthService {
         }
     }
 
-    public List<Map<String, Object>> listUsers(int page, int result) {
+    public List<UserDTO> listUsers(int page, int result) {
         try {
             String token = TokenManager.getInstance().getToken();
             String response = HttpClientUtil.sendGetRequest(API_URL + "/users?page=" + page + "&result=" + result, token);
-            UserListResponse userListResponse = objectMapper.readValue(response, UserListResponse.class);
-            return userListResponse.getUsers();
+            return convertUserListResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<UserDTO> convertUserListResponse(String response) throws Exception {
+        UserListResponse userListResponse = objectMapper.readValue(response, UserListResponse.class);
+        System.out.println(userListResponse.getUsers());
+        return userListResponse.getUsers();
     }
 
     // Classes internes statiques pour représenter les demandes et les réponses de connexion et d'inscription
@@ -153,15 +157,16 @@ public class AuthService {
     }
 
     public static class UserListResponse {
-        private List<Map<String, Object>> users;
+        @JsonProperty("user")
+        private List<UserDTO> user;
 
-        // Getters et setters
-        public List<Map<String, Object>> getUsers() {
-            return users;
+        public List<UserDTO> getUsers() {
+            return user;
         }
 
-        public void setUsers(List<Map<String, Object>> users) {
-            this.users = users;
+        public void setUser(List<UserDTO> user) {
+            this.user = user;
         }
     }
+
 }
