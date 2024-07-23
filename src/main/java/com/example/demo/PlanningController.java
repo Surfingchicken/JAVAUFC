@@ -7,17 +7,14 @@ import com.calendarfx.view.CalendarView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import back.java.core.dto.TacheDTO;
 import back.java.core.services.TacheService;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class PlanningController {
 
@@ -48,29 +45,40 @@ public class PlanningController {
 
     private void loadTasksIntoCalendar(Calendar calendar) throws IOException {
         List<TacheDTO> tasks = tacheService.listTaches();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         for (TacheDTO task : tasks) {
             Entry<String> entry = new Entry<>(task.getNom());
-            LocalDateTime startDateTime = convertToLocalDateTime(task.getDateDebut());
-            LocalDateTime endDateTime = convertToLocalDateTime(task.getDateFin());
+            LocalDateTime startDateTime = LocalDateTime.parse(task.getDateDebut(), formatter);
+            LocalDateTime endDateTime = LocalDateTime.parse(task.getDateFin(), formatter);
+
             entry.changeStartDate(startDateTime.toLocalDate());
             entry.changeEndDate(endDateTime.toLocalDate());
             entry.changeStartTime(startDateTime.toLocalTime());
             entry.changeEndTime(endDateTime.toLocalTime());
+            entry.setId(Long.toString(task.getId()));  // Utiliser l'identifiant comme chaîne
+
             calendar.addEntry(entry);
         }
     }
 
-
-    private LocalDateTime convertToLocalDateTime(String dateString) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        return zonedDateTime.toLocalDateTime();
-    }
-
     private void showTaskDetails(Entry<?> entry) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Task Details");
-        alert.setHeaderText(entry.getTitle());
-        alert.setContentText("Details about the task...");
-        alert.showAndWait();
+        String taskIdStr = entry.getId();
+        Long taskId = Long.parseLong(taskIdStr);  // Convertir l'identifiant en Long
+        TacheDTO task = tacheService.getTache(taskId);
+        if (task != null) {
+            String content = String.format(
+                    "Nom: %s%nDescription: %s%nDate de début: %s%nDate de fin: %s%nType: %s%nExécuteur: %s",
+                    task.getNom(),
+                    task.getDescription(),
+                    task.getDateDebut(),
+                    task.getDateFin(),
+                    task.getType(),
+                    task.getExecuteurTache().getUsername()
+            );
+            Alert alert = new Alert(AlertType.INFORMATION, content, ButtonType.OK);
+            alert.setTitle("Détails de la tâche");
+            alert.setHeaderText(task.getNom());
+            alert.showAndWait();
+        }
     }
 }
