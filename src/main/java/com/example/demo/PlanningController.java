@@ -67,13 +67,13 @@ public class PlanningController {
         TacheDTO task = tacheService.getTache(taskId);
         if (task != null) {
             String content = String.format(
-                    "Nom: %s%nDescription: %s%nDate de début: %s%nDate de fin: %s%nType: %s%nExécuteur: %s",
+                    "Nom: %s%nDescription: %s%nDate de début: %s%nDate de fin: %s%nType: %s%nCréateur: %s",
                     task.getNom(),
                     task.getDescription(),
                     task.getDateDebut(),
                     task.getDateFin(),
                     task.getType(),
-                    task.getExecuteurTache().getUsername()
+                    task.getCreateurTache().getUsername()  // Afficher le créateur au lieu de l'exécuteur
             );
             Alert alert = new Alert(AlertType.INFORMATION, content, ButtonType.OK);
             alert.setTitle("Détails de la tâche");
