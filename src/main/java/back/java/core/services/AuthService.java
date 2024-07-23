@@ -17,7 +17,7 @@ public class AuthService {
         this.objectMapper = new ObjectMapper();
     }
 
-    public String login(String username, String password) {
+    public String login(String username, String password) throws Exception {
         try {
             String payload = objectMapper.writeValueAsString(new LoginRequest(username, password));
             System.out.println("Login Payload: " + payload);
@@ -29,8 +29,7 @@ public class AuthService {
             TokenManager.getInstance().setToken(token);
             return token;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new Exception(e.getMessage());
         }
     }
 
