@@ -10,5 +10,6 @@ module com.example.demo {
     opens back.java.core.dto to javafx.base;
     exports com.example.demo;
     exports back.java.core.dto to com.fasterxml.jackson.databind;
+    exports back.java.core.datas to com.fasterxml.jackson.databind;
 
 }

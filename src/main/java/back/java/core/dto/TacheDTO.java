@@ -7,8 +7,8 @@ public class TacheDTO {
     private long id;
     private String nom;
     private String description;
-    private Date dateDebut;
-    private Date dateFin;
+    private String dateDebut;
+    private String dateFin;
     private String type;
     private UserDTO createurTache;
     private UserDTO executeurTache;
@@ -16,7 +16,7 @@ public class TacheDTO {
     public TacheDTO() {
     }
 
-    public TacheDTO(long id, String nom, String description, Date dateDebut, Date dateFin, String type, UserDTO createurTache, UserDTO executeurTache) {
+    public TacheDTO(long id, String nom, String description, String dateDebut, String dateFin, String type, UserDTO createurTache, UserDTO executeurTache) {
         this.id = id;
         this.nom = nom;
         this.description = description;
@@ -51,19 +51,19 @@ public class TacheDTO {
         this.description = description;
     }
 
-    public Date getDateDebut() {
+    public String getDateDebut() {
         return dateDebut;
     }
 
-    public void setDateDebut(Date dateDebut) {
+    public void setDateDebut(String dateDebut) {
         this.dateDebut = dateDebut;
     }
 
-    public Date getDateFin() {
+    public String getDateFin() {
         return dateFin;
     }
 
-    public void setDateFin(Date dateFin) {
+    public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
     }
 

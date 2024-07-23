@@ -8,15 +8,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import back.java.core.dto.TacheDTO;
-import back.java.core.dto.UserDTO;
-import back.java.core.services.AuthService;
 import back.java.core.services.TacheService;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.io.IOException;
 
 public class PlanningController {
 
@@ -24,21 +25,13 @@ public class PlanningController {
     private CalendarView calendarView;
 
     private final TacheService tacheService;
-    private AuthService authService; // Added field for AuthService
-    private UserDTO currentUser;
 
     public PlanningController() {
         this.tacheService = new TacheService();
     }
 
-    // Method to set the AuthService
-    public void setAuthService(AuthService authService) {
-        this.authService = authService;
-        System.out.println("AuthService has been set in PlanningController.");
-    }
-
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
         Calendar calendar = new Calendar("My Tasks");
         CalendarSource calendarSource = new CalendarSource("Tasks");
         calendarSource.getCalendars().add(calendar);
@@ -53,7 +46,7 @@ public class PlanningController {
         });
     }
 
-    private void loadTasksIntoCalendar(Calendar calendar) {
+    private void loadTasksIntoCalendar(Calendar calendar) throws IOException {
         List<TacheDTO> tasks = tacheService.listTaches();
         for (TacheDTO task : tasks) {
             Entry<String> entry = new Entry<>(task.getNom());
@@ -67,10 +60,10 @@ public class PlanningController {
         }
     }
 
-    private LocalDateTime convertToLocalDateTime(Date date) {
-        return Instant.ofEpochMilli(date.getTime())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+
+    private LocalDateTime convertToLocalDateTime(String dateString) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        return zonedDateTime.toLocalDateTime();
     }
 
     private void showTaskDetails(Entry<?> entry) {

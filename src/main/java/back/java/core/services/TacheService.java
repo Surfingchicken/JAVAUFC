@@ -1,5 +1,6 @@
 package back.java.core.services;
 
+import com.example.demo.UserSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import back.java.core.datas.TacheData;
 import back.java.core.dto.TacheDTO;
@@ -8,6 +9,7 @@ import back.java.core.mapper.TacheMapper;
 import back.java.core.utils.HttpClientUtil;
 import back.java.core.utils.TokenManager;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +26,11 @@ public class TacheService {
 
     public TacheDTO getTache(Long id) {
         try {
+            String token = UserSession.getInstance().getToken();
             String response = HttpClientUtil.sendGetRequest(API_URL + "/taches/" + id, token);
             TacheData tacheData = objectMapper.readValue(response, TacheData.class);
-            UserDTO createurTache = getUserById(tacheData.getCreateurTacheId());
-            UserDTO executeurTache = getUserById(tacheData.getExecuteurTacheId());
+            UserDTO createurTache = getUserById(tacheData.getCreateurTache().getId());
+            UserDTO executeurTache = getUserById(tacheData.getExecuteurTache().getId());
             return TacheMapper.toDTO(tacheData, createurTache, executeurTache);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,22 +64,14 @@ public class TacheService {
         }
     }
 
-    public List<TacheDTO> listTaches() {
-        try {
-            String token = TokenManager.getInstance().getToken();
-            String response = HttpClientUtil.sendGetRequest(API_URL + "/taches/list", token);
-            List<TacheData> tacheDataList = objectMapper.readValue(response, objectMapper.getTypeFactory().constructCollectionType(List.class, TacheData.class));
-            List<TacheDTO> tacheDTOList = tacheDataList.stream().map(tacheData -> {
-                UserDTO createurTache = getUserById(tacheData.getCreateurTacheId());
-                UserDTO executeurTache = getUserById(tacheData.getExecuteurTacheId());
-                return TacheMapper.toDTO(tacheData, createurTache, executeurTache);
-            }).collect(Collectors.toList());
-            return tacheDTOList;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<TacheDTO> listTaches() throws IOException {
+        String token = UserSession.getInstance().getToken();
+        String response = HttpClientUtil.sendGetRequest(API_URL + "/taches/list", token);
+        List<TacheData> tacheDataList = objectMapper.readValue(response, objectMapper.getTypeFactory().constructCollectionType(List.class, TacheData.class));
+        List<TacheDTO> tacheDTOList = tacheDataList.stream().map(TacheMapper::toDTO).collect(Collectors.toList());
+        return tacheDTOList;
     }
+
 
     private UserDTO getUserById(Long userId) {
         try {
