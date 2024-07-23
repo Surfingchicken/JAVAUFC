@@ -7,6 +7,8 @@ public class UserDTO {
     private long id;
     private String username;
     private String email;
+    private String password;
+
     private List<TokenDTO> tokens;
     private RoleDTO roles;
     private List<TacheDTO> tachesCreer;
@@ -16,14 +18,16 @@ public class UserDTO {
     public UserDTO() {
     }
 
+
+
     // Parameterized constructor
-    public UserDTO(long id, String username, String email, List<TokenDTO> tokens, RoleDTO roles, List<TacheDTO> tachesCreer, List<TacheDTO> tachesExecute) {
+    public UserDTO(long id, String username, String email, List<TokenDTO> tokens, RoleDTO roles, List<TacheDTO> tachesCreer, List<TacheDTO> tachesExecute, String password) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.tokens = tokens;
         this.roles = roles;
-
+        this.password = password;
         this.tachesCreer = tachesCreer;
         this.tachesExecute = tachesExecute;
     }
@@ -84,5 +88,12 @@ public class UserDTO {
 
     public void setTachesExecute(List<TacheDTO> tachesExecute) {
         this.tachesExecute = tachesExecute;
+    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

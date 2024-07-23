@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.net.URL;
 import java.util.List;
@@ -38,6 +37,11 @@ public class ListUserController implements Initializable {
     public ListUserController() {
         // No-argument constructor
     }
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (userTable == null) {
@@ -52,7 +56,7 @@ public class ListUserController implements Initializable {
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         roleColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue().getRoles() != null) {
-                return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getRoles().getNom());
+                return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getRoles().getName());
             }
             return new javafx.beans.property.SimpleStringProperty("Unknown");
         });
@@ -60,11 +64,16 @@ public class ListUserController implements Initializable {
         userTable.setItems(userList);
         loadUsersAsync();
     }
+
     private void loadUsersAsync() {
         Task<List<UserDTO>> task = new Task<>() {
             @Override
             protected List<UserDTO> call() {
                 try {
+                    // Ensure authService is not null
+                    if (authService == null) {
+                        throw new IllegalStateException("AuthService is not initialized");
+                    }
                     // Fetch users from AuthService
                     return authService.listUsers(1, 10); // Fetch first page with 10 users
                 } catch (Exception e) {
