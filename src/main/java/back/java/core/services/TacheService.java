@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class TacheService {
 
-    private static final String API_URL = "http://localhost:3300";
+    private static final String API_URL = "http://localhost:3000";
     private final ObjectMapper objectMapper;
     private final String token;
 

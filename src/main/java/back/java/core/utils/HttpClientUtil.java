@@ -1,6 +1,7 @@
 package back.java.core.utils;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -12,20 +13,27 @@ public class HttpClientUtil {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Authorization", "Bearer " + token);
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) { // OK
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
+        try {
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) { // OK
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder content = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+                in.close();
+                return content.toString();
+            } else {
+                throw new IOException("Server returned HTTP response code: " + responseCode + " for URL: " + urlString);
             }
-            in.close();
-            return content.toString();
-        } else {
-            throw new IOException("Server returned HTTP response code: " + responseCode + " for URL: " + urlString);
+        } catch (ConnectException e) {
+            throw new IOException("Failed to connect to the server. Please ensure the server is running and accessible.", e);
+        } finally {
+            connection.disconnect();
         }
     }
+
     public static String sendPostRequest(String urlString, String payload, String token) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -9,8 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import back.java.core.dto.TacheDTO;
 import back.java.core.dto.UserDTO;
+import back.java.core.services.AuthService;
 import back.java.core.services.TacheService;
-import com.example.demo.UserSession;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -24,10 +24,17 @@ public class PlanningController {
     private CalendarView calendarView;
 
     private final TacheService tacheService;
+    private AuthService authService; // Added field for AuthService
     private UserDTO currentUser;
 
     public PlanningController() {
         this.tacheService = new TacheService();
+    }
+
+    // Method to set the AuthService
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+        System.out.println("AuthService has been set in PlanningController.");
     }
 
     @FXML
@@ -45,7 +52,6 @@ public class PlanningController {
             return null;
         });
     }
-
 
     private void loadTasksIntoCalendar(Calendar calendar) {
         List<TacheDTO> tasks = tacheService.listTaches();
@@ -75,4 +81,3 @@ public class PlanningController {
         alert.showAndWait();
     }
 }
-
