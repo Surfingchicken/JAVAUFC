@@ -17,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class ListUserController implements Initializable {
 
@@ -45,6 +46,8 @@ public class ListUserController implements Initializable {
     private RoleService roleService;
     private ObservableList<UserDTO> userList;
     private FilteredList<UserDTO> filteredList;
+    private Predicate<UserDTO> rolePredicate = user -> true;
+    private Predicate<UserDTO> searchPredicate = user -> true;
 
     public ListUserController() {
         // No-argument constructor
@@ -93,8 +96,26 @@ public class ListUserController implements Initializable {
         userTable.setItems(filteredList);
 
         // Setup filters
-        searchField.textProperty().addListener((obs, oldText, newText) -> filterBySearch());
-        roleComboBox.setOnAction(event -> filterByRole());
+        searchField.textProperty().addListener((obs, oldText, newText) -> {
+            searchPredicate = user -> {
+                if (newText == null || newText.isEmpty()) {
+                    return true;
+                }
+                return user.getUsername().toLowerCase().contains(newText.toLowerCase()) ||
+                        user.getEmail().toLowerCase().contains(newText.toLowerCase());
+            };
+            updateFilteredData();
+        });
+
+        roleComboBox.setOnAction(event -> {
+            String selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
+            if (selectedRole != null && !selectedRole.equalsIgnoreCase("All")) {
+                rolePredicate = user -> user.getRoles() != null && user.getRoles().getName().equalsIgnoreCase(selectedRole);
+            } else {
+                rolePredicate = user -> true;
+            }
+            updateFilteredData();
+        });
     }
 
     private void initializeData() {
@@ -107,19 +128,21 @@ public class ListUserController implements Initializable {
             @Override
             protected List<UserDTO> call() {
                 try {
-                    // Ensure authService is not null
                     if (authService == null) {
                         throw new IllegalStateException("AuthService is not initialized");
                     }
-                    // Fetch users from AuthService
                     List<UserDTO> users = authService.listUsers(1, 10); // Fetch first page with 10 users
                     System.out.println("Users fetched: " + users.size()); // Log fetched users count
                     return users;
+                } catch (SecurityException e) {
+                    showAlert("Permissions insuffisantes", "Vous n'avez pas les permissions nécessaires pour afficher les utilisateurs.");
+                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             }
+
             @Override
             protected void succeeded() {
                 List<UserDTO> users = getValue();
@@ -134,7 +157,6 @@ public class ListUserController implements Initializable {
                 Throwable exception = getException();
                 exception.printStackTrace();
 
-                // Show an alert to the user
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Failed to load users");
@@ -155,8 +177,14 @@ public class ListUserController implements Initializable {
                         throw new IllegalStateException("RoleService is not initialized");
                     }
                     List<RoleDTO> roles = roleService.listRoles();
+                    if (roles == null) {
+                        throw new NullPointerException("Fetched roles are null");
+                    }
                     System.out.println("Roles fetched: " + roles.size()); // Log fetched roles count
                     return roles;
+                } catch (SecurityException e) {
+                    showAlert("Permissions insuffisantes", "Vous n'avez pas les permissions nécessaires pour afficher les rôles.");
+                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -192,28 +220,15 @@ public class ListUserController implements Initializable {
         new Thread(task).start();
     }
 
-    private void filterBySearch() {
-        String searchText = searchField.getText().toLowerCase();
-        filteredList.setPredicate(user -> {
-            if (searchText == null || searchText.isEmpty()) {
-                return true;
-            }
-            return user.getUsername().toLowerCase().contains(searchText) ||
-                    user.getEmail().toLowerCase().contains(searchText);
-        });
+    private void updateFilteredData() {
+        filteredList.setPredicate(rolePredicate.and(searchPredicate));
     }
 
-    private void filterByRole() {
-        String selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
-        if (selectedRole != null && !selectedRole.equalsIgnoreCase("All")) {
-            filteredList.setPredicate(user -> {
-                if (user.getRoles() != null) {
-                    return user.getRoles().getName().equalsIgnoreCase(selectedRole);
-                }
-                return false;
-            });
-        } else {
-            filteredList.setPredicate(user -> true);
-        }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
