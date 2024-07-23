@@ -61,9 +61,10 @@ public class TacheService {
         }
     }
 
-    public List<TacheDTO> listTaches(Long userId) {
+    public List<TacheDTO> listTaches() {
         try {
-            String response = HttpClientUtil.sendGetRequest(API_URL + "/taches/list?userId=" + userId, token);
+            String token = TokenManager.getInstance().getToken();
+            String response = HttpClientUtil.sendGetRequest(API_URL + "/taches/list", token);
             List<TacheData> tacheDataList = objectMapper.readValue(response, objectMapper.getTypeFactory().constructCollectionType(List.class, TacheData.class));
             List<TacheDTO> tacheDTOList = tacheDataList.stream().map(tacheData -> {
                 UserDTO createurTache = getUserById(tacheData.getCreateurTacheId());
