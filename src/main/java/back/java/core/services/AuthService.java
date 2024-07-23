@@ -1,11 +1,11 @@
 package back.java.core.services;
 
-import back.java.core.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import back.java.core.utils.HttpClientUtil;
 import back.java.core.utils.TokenManager;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import back.java.core.dto.UserDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public class AuthService {
@@ -17,29 +17,31 @@ public class AuthService {
         this.objectMapper = new ObjectMapper();
     }
 
-    public String login(String username, String password) throws Exception {
+    public String login(String username, String password) {
         try {
             String payload = objectMapper.writeValueAsString(new LoginRequest(username, password));
-            //System.out.println("Login Payload: " + payload);
+            System.out.println("Login Payload: " + payload);
             String response = HttpClientUtil.sendPostRequest(API_URL + "/auth/login", payload, null);
-            //System.out.println("Login Response: " + response);
+            System.out.println("Login Response: " + response);
             LoginResponse loginResponse = objectMapper.readValue(response, LoginResponse.class);
             String token = loginResponse.getToken();
-            //System.out.println("Token: " + token);
+            System.out.println("Token: " + token);
             TokenManager.getInstance().setToken(token);
             return token;
         } catch (Exception e) {
-            throw new Exception("Login failed: " + e.getMessage(), e);
+            e.printStackTrace();
+            return null;
         }
     }
 
-    public String signup(String username, String email, String password) throws Exception {
+    public String signup(String username, String email, String password) {
         try {
             String payload = objectMapper.writeValueAsString(new SignupRequest(username, email, password));
             HttpClientUtil.sendPostRequest(API_URL + "/auth/signup", payload, null);
-            return login(username, password); // Automatically log in after sign up
+            return login(username, password);
         } catch (Exception e) {
-            throw new Exception("Signup failed: " + e.getMessage(), e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -62,21 +64,18 @@ public class AuthService {
         }
     }
 
-    public List<UserDTO> listUsers(int page, int result) {
+    public List<UserDTO> listUsers(int page, int result) throws IOException, SecurityException {
         try {
             String token = TokenManager.getInstance().getToken();
             String response = HttpClientUtil.sendGetRequest(API_URL + "/users?page=" + page + "&result=" + result, token);
-            return convertUserListResponse(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            UserListResponse userListResponse = objectMapper.readValue(response, UserListResponse.class);
+            return userListResponse.getUser();
+        } catch (IOException e) {
+            if (e.getMessage().contains("Server returned HTTP response code: 401")) {
+                throw new SecurityException("Permissions insuffisantes");
+            }
+            throw e;
         }
-    }
-
-    private List<UserDTO> convertUserListResponse(String response) throws Exception {
-        UserListResponse userListResponse = objectMapper.readValue(response, UserListResponse.class);
-        System.out.println(userListResponse.getUsers());
-        return userListResponse.getUsers();
     }
 
     // Classes internes statiques pour représenter les demandes et les réponses de connexion et d'inscription
@@ -157,10 +156,10 @@ public class AuthService {
     }
 
     public static class UserListResponse {
-        @JsonProperty("user")
         private List<UserDTO> user;
 
-        public List<UserDTO> getUsers() {
+        // Getters et setters
+        public List<UserDTO> getUser() {
             return user;
         }
 
@@ -168,5 +167,4 @@ public class AuthService {
             this.user = user;
         }
     }
-
 }

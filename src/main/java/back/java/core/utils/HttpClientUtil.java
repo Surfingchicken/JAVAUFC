@@ -6,24 +6,26 @@ import java.net.URL;
 
 public class HttpClientUtil {
 
-    public static String sendGetRequest(String urlString, String token) throws Exception {
+    public static String sendGetRequest(String urlString, String token) throws IOException {
         URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        if (token != null && !token.isEmpty()) {
-            conn.setRequestProperty("Authorization", "Bearer " + token);
-        }
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) { // OK
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            return content.toString();
+        } else {
+            throw new IOException("Server returned HTTP response code: " + responseCode + " for URL: " + urlString);
         }
-        reader.close();
-        return response.toString();
     }
-
     public static String sendPostRequest(String urlString, String payload, String token) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

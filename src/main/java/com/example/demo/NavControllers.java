@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import back.java.core.services.AuthService;
+import back.java.core.services.RoleService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ public class NavControllers implements Initializable {
     private SplitPane mainSplitPane;
 
     private final AuthService authService = new AuthService(); // Initialisation de AuthService
+    private final RoleService roleService = new RoleService(); // Initialisation de RoleService
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,6 +71,7 @@ public class NavControllers implements Initializable {
         if ("list_employees".equals(pageName)) {
             ListUserController controller = loader.getController();
             controller.setAuthService(authService); // Injecter AuthService dans le contrôleur
+            controller.setRoleService(roleService); // Injecter RoleService dans le contrôleur
         }
 
         mainSplitPane.getItems().set(1, view);
