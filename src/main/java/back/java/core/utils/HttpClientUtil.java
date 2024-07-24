@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class HttpClientUtil {
 
@@ -46,7 +47,7 @@ public class HttpClientUtil {
         }
 
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = payload.getBytes("utf-8");
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
@@ -54,7 +55,7 @@ public class HttpClientUtil {
         //System.out.println("HTTP Response Code: " + responseCode);
 
         if (responseCode >= 200 && responseCode < 300) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {
@@ -63,13 +64,13 @@ public class HttpClientUtil {
                 return response.toString();
             }
         } else {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {
                     response.append(responseLine.trim());
                 }
-                throw new IOException("HTTP error code: " + responseCode + " with response: " + response.toString());
+                throw new IOException("HTTP error code: " + responseCode + " with response: " + response);
             }
         }
     }
@@ -85,7 +86,7 @@ public class HttpClientUtil {
         conn.setDoOutput(true);
 
         try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = payload.getBytes("utf-8");
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
         catch (IOException e) {
@@ -94,7 +95,7 @@ public class HttpClientUtil {
             throw new IOException("Failed to send POST request payload", e); // Re-throw with context
         }
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder response = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
@@ -130,13 +131,13 @@ public class HttpClientUtil {
         connection.setDoOutput(true);
 
         try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = payload.getBytes("utf-8");
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {

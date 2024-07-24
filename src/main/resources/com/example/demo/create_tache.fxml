@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="307.0" prefWidth="418.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.CreateTacheController">
+    <children>
+        <Label text="Créer une nouvelle tâche" />
+        <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints minWidth="10" percentWidth="50.0" prefWidth="100" />
+                <ColumnConstraints minWidth="10" prefWidth="200" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10" prefHeight="30" />
+                <RowConstraints minHeight="10" prefHeight="60.0" />
+                <RowConstraints minHeight="10" prefHeight="30" />
+                <RowConstraints minHeight="10" prefHeight="30" />
+                <RowConstraints minHeight="10" prefHeight="30" />
+                <RowConstraints minHeight="10" prefHeight="30" />
+            </rowConstraints>
+            <children>
+                <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="nameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextArea fx:id="descriptionArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Date Debut (yyyy-MM-dd HH:mm):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="dateDebutField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Date Fin (yyyy-MM-dd HH:mm):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <TextField fx:id="dateFinField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Button fx:id="saveButton" onAction="#handleSave" text="Enregistrer" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </GridPane>
+    </children>
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+</VBox>

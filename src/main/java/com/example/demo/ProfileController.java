@@ -19,7 +19,7 @@ public class ProfileController {
     @FXML
     private Label profileLabel;
 
-    private ProfileService profileService = new ProfileService();
+    private final ProfileService profileService = new ProfileService();
 
 
     @FXML

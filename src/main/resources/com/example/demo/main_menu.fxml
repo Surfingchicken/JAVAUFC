@@ -124,7 +124,8 @@
                                     </HBox>
                                  </graphic>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#navSurveys" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+                              <Button mnemonicParsing="false" onAction="#logOut" prefWidth="150.0" text="Logout" underline="true" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#navListTaches" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="3">
                                  <graphic>
                                     <HBox>
                                        <children>
@@ -137,36 +138,8 @@
                                                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                              </rowConstraints>
                                              <children>
-                                                <Label text="Sondages" underline="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                                                   <GridPane.margin>
-                                                      <Insets />
-                                                   </GridPane.margin>
-                                                </Label>
-                                                <FontAwesomeIconView glyphName="THUMBS_UP" GridPane.halignment="CENTER" />
-                                             </children>
-                                          </GridPane>
-                                       </children>
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor>
-                                    </HBox>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#navMeetings" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="4">
-                                 <graphic>
-                                    <HBox>
-                                       <children>
-                                          <GridPane HBox.hgrow="ALWAYS">
-                                             <columnConstraints>
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                                             </columnConstraints>
-                                             <rowConstraints>
-                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                             </rowConstraints>
-                                             <children>
-                                                <Label text="Meetings" underline="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                                                <FontAwesomeIconView glyphName="PHONE" GridPane.halignment="CENTER" />
+                                                <Label text="Liste tâches" underline="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                <FontAwesomeIconView glyphName="BOOK" GridPane.halignment="CENTER" />
                                              </children>
                                           </GridPane>
                                        </children>

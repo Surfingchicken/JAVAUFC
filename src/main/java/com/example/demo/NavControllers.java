@@ -2,6 +2,7 @@ package com.example.demo;
 
 import back.java.core.services.AuthService;
 import back.java.core.services.RoleService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -55,12 +56,10 @@ public class NavControllers implements Initializable {
     public void navSurveys(ActionEvent event) throws IOException {
         loadPage("surveys");
     }
-
     @FXML
-    public void navModifyProfile(ActionEvent actionEvent) throws IOException {
-        loadPage("modify_profile");
+    public void navListTaches(ActionEvent actionEvent) throws IOException {
+        loadPage("list_taches");
     }
-
     private void loadPage(String pageName) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(pageName + ".fxml"));
         Pane view = loader.load();
@@ -73,4 +72,12 @@ public class NavControllers implements Initializable {
 
         mainSplitPane.getItems().set(1, view);
     }
+
+    public void logOut(ActionEvent actionEvent) {
+        AuthService authService = new AuthService();
+        authService.logout();
+        Platform.exit();
+    }
+
+
 }

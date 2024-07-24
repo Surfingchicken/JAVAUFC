@@ -4,6 +4,7 @@ module com.example.demo {
     requires com.fasterxml.jackson.databind;
     requires jakarta.persistence;
     requires com.calendarfx.view;
+    requires jfxtras.controls;
 
     opens com.example.demo to javafx.fxml;
     opens back.java.core.services to com.fasterxml.jackson.databind;
