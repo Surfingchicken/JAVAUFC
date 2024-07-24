@@ -31,7 +31,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <CalendarView fx:id="calendarView" GridPane.columnSpan="6" GridPane.rowSpan="7" />
+            <CalendarView fx:id="calendarView" enableHyperlinks="false" selectionMode="SINGLE" showAddCalendarButton="false" showDetailsUponEntryCreation="false" showSourceTrayButton="false" GridPane.columnSpan="6" GridPane.rowSpan="7" />
          </children>
       </GridPane>
    </children>
