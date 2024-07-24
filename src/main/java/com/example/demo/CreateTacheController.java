@@ -2,7 +2,6 @@ package com.example.demo;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
@@ -11,10 +10,13 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.io.IOException;
 
 import back.java.core.dto.TacheDTO;
-import back.java.core.dto.UserDTO;
 import back.java.core.services.TacheService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CreateTacheController {
 
@@ -28,6 +30,7 @@ public class CreateTacheController {
     private TextField dateFinField;   // Assuming this is a TextField for date input
 
     private final TacheService tacheService = new TacheService();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @FXML
     private void handleSave(ActionEvent event) {
@@ -42,17 +45,35 @@ public class CreateTacheController {
             tacheDTO.setDescription(description);
             tacheDTO.setDateDebut(parseDate(dateDebut)); // Convert to ISO 8601 format
             tacheDTO.setDateFin(parseDate(dateFin));     // Convert to ISO 8601 format
-            tacheDTO.setType("task"); // Fixed value
-            tacheDTO.setExecuteurTache(tacheService.getUserById(2L));
+            tacheDTO.setType("tache"); // Fixed value
 
-            // Optionally set the creator if needed
-            // tacheDTO.setCreateurTache(new UserDTO(creatorId, null, null, null, null, null, null, null));
+            Long userId = tacheService.getUserId();
+            if (userId == null) {
+                showAlert(Alert.AlertType.ERROR, "Session Error", "Could not retrieve user ID.");
+                return;
+            }
 
-            tacheService.createTache(tacheDTO);
+            try {
+                // Convert TacheDTO to JSON
+                ObjectNode tacheJson = (ObjectNode) objectMapper.valueToTree(tacheDTO);
+                // Replace executeurTache object with executeur ID
+                tacheJson.put("executeur", userId);
+                // Assuming the createur ID is also needed and retrieved similarly
+                Long createurId = tacheService.getUserId(); // Modify as needed
+                tacheJson.put("createur", createurId);
+                // Remove the "id" field
+                tacheJson.remove("id");
 
-            showAlert(AlertType.INFORMATION, "Success", "Task has been created successfully!");
+                String payload = tacheJson.toString();
+                tacheService.createTache(payload); // Send JSON string as payload
+
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been created successfully!");
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Service Error", "Failed to create task: " + e.getMessage());
+                e.printStackTrace();
+            }
         } else {
-            showAlert(AlertType.ERROR, "Validation Error", "Please check your inputs and try again.");
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Please check your inputs and try again.");
         }
     }
 
@@ -86,7 +107,7 @@ public class CreateTacheController {
         return zonedDateTime.format(outputFormatter);
     }
 
-    private void showAlert(AlertType type, String title, String message) {
+    private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);

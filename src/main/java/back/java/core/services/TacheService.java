@@ -1,6 +1,7 @@
 package back.java.core.services;
 
 import com.example.demo.UserSession;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import back.java.core.datas.TacheData;
 import back.java.core.dto.TacheDTO;
@@ -8,6 +9,7 @@ import back.java.core.dto.UserDTO;
 import back.java.core.mapper.TacheMapper;
 import back.java.core.utils.HttpClientUtil;
 import back.java.core.utils.TokenManager;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,14 +40,14 @@ public class TacheService {
         }
     }
 
-    public void createTache(TacheDTO tacheDTO) {
+    public void createTache(String payload) {
         try {
-            String payload = objectMapper.writeValueAsString(tacheDTO);
             HttpClientUtil.sendPostRequest(API_URL + "/taches", payload, token);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public void updateTache(Long id, TacheDTO tacheDTO) {
         try {
@@ -73,13 +75,29 @@ public class TacheService {
     }
 
 
-    public UserDTO getUserById(Long userId) {
+
+    public Long getUserId() {
+        String url = API_URL + "/getUserId/";
         try {
-            String response = HttpClientUtil.sendGetRequest(API_URL + "/user/" + userId, token);
-            return objectMapper.readValue(response, UserDTO.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            String jsonResponse = HttpClientUtil.sendGetRequest(url, token);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(jsonResponse);
+            return jsonNode.get("userId").asLong();
+        } catch (IOException e) {
+            System.err.println("Error fetching user ID: " + e.getMessage());
+            return null; // Return null if there is an error
+        }
+    }
+
+    public UserDTO getUserById(Long id) {
+        String url = API_URL + "/user/" + id;
+        try {
+            String jsonResponse = HttpClientUtil.sendGetRequest(url, token);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(jsonResponse, UserDTO.class);
+        } catch (IOException e) {
+            System.err.println("Error fetching user with id " + id + ": " + e.getMessage());
+            return null; // Return null if user is not found
         }
     }
 }

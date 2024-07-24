@@ -3,6 +3,7 @@ package com.example.demo;
 public class UserSession {
     private static UserSession instance;
 
+    private Long userId;
     private String username;
     private String token;
 
@@ -14,6 +15,14 @@ public class UserSession {
             instance = new UserSession();
         }
         return instance;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -33,6 +42,7 @@ public class UserSession {
     }
 
     public void clearSession() {
+        userId = null;
         username = null;
         token = null;
     }

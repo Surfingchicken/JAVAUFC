@@ -1,15 +1,18 @@
 package back.java.core.dto;
 
-import java.util.Date;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TacheDTO {
 
     private long id;
-    private String nom;
-    private String description;
-    private String dateDebut;
-    private String dateFin;
-    private String type;
+    private final StringProperty nom = new SimpleStringProperty();
+    private final StringProperty description = new SimpleStringProperty();
+    private final StringProperty dateDebut = new SimpleStringProperty();
+    private final StringProperty dateFin = new SimpleStringProperty();
+    private final StringProperty type = new SimpleStringProperty();
     private UserDTO createurTache;
     private UserDTO executeurTache;
 
@@ -18,11 +21,11 @@ public class TacheDTO {
 
     public TacheDTO(long id, String nom, String description, String dateDebut, String dateFin, String type, UserDTO createurTache, UserDTO executeurTache) {
         this.id = id;
-        this.nom = nom;
-        this.description = description;
-        this.dateDebut = dateDebut;
-        this.dateFin = dateFin;
-        this.type = type;
+        setNom(nom); // Utilisation des setters
+        setDescription(description);
+        setDateDebut(dateDebut);
+        setDateFin(dateFin);
+        setType(type);
         this.createurTache = createurTache;
         this.executeurTache = executeurTache;
     }
@@ -36,44 +39,65 @@ public class TacheDTO {
     }
 
     public String getNom() {
-        return nom;
+        return nom.get();
     }
 
     public void setNom(String nom) {
-        this.nom = nom;
+        this.nom.set(nom);
     }
 
+    public StringProperty nomProperty() {
+        return nom;
+    }
+    @JsonProperty("description")
     public String getDescription() {
-        return description;
+        return description.get();
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description.set(description);
     }
 
+    public StringProperty descriptionProperty() {
+        return description;
+    }
+    @JsonProperty("date_debut")
     public String getDateDebut() {
-        return dateDebut;
+        return dateDebut.get();
     }
 
     public void setDateDebut(String dateDebut) {
-        this.dateDebut = dateDebut;
+        this.dateDebut.set(dateDebut);
     }
 
+    public StringProperty dateDebutProperty() {
+        return dateDebut;
+    }
+    @JsonProperty("date_fin")
     public String getDateFin() {
-        return dateFin;
+        return dateFin.get();
     }
 
     public void setDateFin(String dateFin) {
-        this.dateFin = dateFin;
+        this.dateFin.set(dateFin);
     }
 
+    public StringProperty dateFinProperty() {
+        return dateFin;
+    }
+    @JsonProperty("type")
     public String getType() {
-        return type;
+        return type.get();
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.type.set(type);
     }
+
+    public StringProperty typeProperty() {
+        return type;
+    }
+    @JsonProperty("createur")
 
     public UserDTO getCreateurTache() {
         return createurTache;
@@ -82,6 +106,7 @@ public class TacheDTO {
     public void setCreateurTache(UserDTO createurTache) {
         this.createurTache = createurTache;
     }
+    @JsonProperty("executeur")
 
     public UserDTO getExecuteurTache() {
         return executeurTache;

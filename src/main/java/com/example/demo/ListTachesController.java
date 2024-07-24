@@ -52,7 +52,7 @@ public class ListTachesController {
         tacheList = FXCollections.observableArrayList();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         dateDebutColumn.setCellValueFactory(new PropertyValueFactory<>("dateDebut"));
         dateFinColumn.setCellValueFactory(new PropertyValueFactory<>("dateFin"));

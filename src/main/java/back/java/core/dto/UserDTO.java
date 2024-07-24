@@ -18,6 +18,10 @@ public class UserDTO {
     public UserDTO() {
     }
 
+    public UserDTO(long id) {
+        this.id = id;
+    }
+
 
 
     // Parameterized constructor
