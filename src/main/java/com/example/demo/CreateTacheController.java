@@ -16,6 +16,7 @@ import back.java.core.services.TacheService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javafx.stage.Stage;
 
 public class CreateTacheController {
 
@@ -60,14 +61,20 @@ public class CreateTacheController {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been updated successfully!");
                 } else {
                     // Create new task
-                    ObjectNode tacheJson = (ObjectNode) objectMapper.valueToTree(tacheDTO);
+                    ObjectNode tacheJson = objectMapper.createObjectNode();
+                    tacheJson.put("nom", tacheDTO.getNom());
+                    tacheJson.put("description", tacheDTO.getDescription());
+                    tacheJson.put("date_debut", tacheDTO.getDateDebut());
+                    tacheJson.put("date_fin", tacheDTO.getDateFin());
+                    tacheJson.put("type", tacheDTO.getType());
                     tacheJson.put("executeur", userId);
                     Long createurId = tacheService.getUserId();
                     tacheJson.put("createur", createurId);
-                    tacheJson.remove("id");
+
                     tacheService.createTache(tacheJson.toString());
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been created successfully!");
                 }
+                closeWindow();
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Service Error", "Failed to save task: " + e.getMessage());
                 e.printStackTrace();
@@ -103,16 +110,31 @@ public class CreateTacheController {
 
     private String parseDate(String dateTime) throws DateTimeParseException {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+        // Parse the input date-time string to a LocalDateTime
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, inputFormatter);
-        return localDateTime.format(outputFormatter);
+
+        // Convert LocalDateTime to ZonedDateTime with UTC offset
+        ZonedDateTime zonedDateTime = localDateTime.atZone(java.time.ZoneOffset.UTC);
+
+        // Format the ZonedDateTime to ISO 8601 format
+        return zonedDateTime.format(outputFormatter);
     }
 
     private String formatDate(String dateTime) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(dateTime, inputFormatter);
-        return localDateTime.format(outputFormatter);
+
+        // Parse the ISO 8601 date-time string to a ZonedDateTime
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateTime, inputFormatter);
+
+        // Format the ZonedDateTime to the desired format
+        return zonedDateTime.format(outputFormatter);
+    }
+    private void closeWindow() {
+        Stage stage = (Stage) nameField.getScene().getWindow();
+        stage.close();
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
