@@ -33,7 +33,8 @@ public class PlanningController {
         CalendarSource calendarSource = new CalendarSource("Tasks");
         calendarSource.getCalendars().add(calendar);
         calendarView.getCalendarSources().add(calendarSource);
-
+        calendarView.setContextMenuCallback(null);
+        calendarView.setEntryFactory(param->null);
         loadTasksIntoCalendar(calendar);
 
         calendarView.setEntryDetailsPopOverContentCallback(param -> {

@@ -55,15 +55,18 @@ public class ListTachesController {
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         dateDebutColumn.setCellValueFactory(new PropertyValueFactory<>("dateDebut"));
         dateFinColumn.setCellValueFactory(new PropertyValueFactory<>("dateFin"));
+        setModifyColumnCellFactory();
+
         loadTaches();
         userTable.setItems(tacheList);
+    }
 
+    private void setModifyColumnCellFactory() {
         modifyColumn.setCellFactory(column -> new TableCell<TacheDTO, Void>() {
             private final Button modifyButton = new Button("*");
             private final Button deleteButton = new Button("-");
 
             {
-                // Style buttons
                 modifyButton.setStyle("-fx-background-color: lightblue;");
                 deleteButton.setStyle("-fx-background-color: lightcoral;");
 
@@ -80,7 +83,6 @@ public class ListTachesController {
                 setGraphic(empty ? null : getGraphic());
             }
         });
-
     }
 
     private void handleDelete(TacheDTO tache) {
@@ -90,6 +92,7 @@ public class ListTachesController {
             loadTaches();
         }
     }
+
     private void handleModify(TacheDTO tache) {
         if (tache != null) {
             try {
@@ -108,9 +111,11 @@ public class ListTachesController {
             }
         }
     }
+
     private void loadTaches() {
         try {
             tacheList.setAll(tacheService.listTaches());
+            setModifyColumnCellFactory();
         } catch (IOException e) {
             e.printStackTrace();
         }
