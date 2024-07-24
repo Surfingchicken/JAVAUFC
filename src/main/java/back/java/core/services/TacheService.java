@@ -52,7 +52,7 @@ public class TacheService {
     public void updateTache(Long id, TacheDTO tacheDTO) {
         try {
             String payload = objectMapper.writeValueAsString(tacheDTO);
-            HttpClientUtil.sendPatchRequest(API_URL + "/taches/" + id, payload, token);
+            HttpClientUtil.sendPutRequest(API_URL + "/taches/" + id, payload, token);
         } catch (Exception e) {
             e.printStackTrace();
         }
