@@ -43,7 +43,7 @@ public class CreateTacheController {
             tacheDTO.setDateDebut(parseDate(dateDebut)); // Convert to ISO 8601 format
             tacheDTO.setDateFin(parseDate(dateFin));     // Convert to ISO 8601 format
             tacheDTO.setType("task"); // Fixed value
-            tacheDTO.setExecuteurTache(new UserDTO(2L, null, null, null, null, null, null, null)); // Fixed user ID
+            tacheDTO.setExecuteurTache(tacheService.getUserById(2L));
 
             // Optionally set the creator if needed
             // tacheDTO.setCreateurTache(new UserDTO(creatorId, null, null, null, null, null, null, null));

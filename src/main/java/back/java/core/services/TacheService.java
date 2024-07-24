@@ -73,7 +73,7 @@ public class TacheService {
     }
 
 
-    private UserDTO getUserById(Long userId) {
+    public UserDTO getUserById(Long userId) {
         try {
             String response = HttpClientUtil.sendGetRequest(API_URL + "/user/" + userId, token);
             return objectMapper.readValue(response, UserDTO.class);
