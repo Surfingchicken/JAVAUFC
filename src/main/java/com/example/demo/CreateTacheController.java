@@ -28,6 +28,7 @@ public class CreateTacheController {
     private TextField dateDebutField; // Assuming this is a TextField for date input
     @FXML
     private TextField dateFinField;   // Assuming this is a TextField for date input
+    private ListTachesController listTachesController;
 
     private final TacheService tacheService = new TacheService();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -132,9 +133,17 @@ public class CreateTacheController {
         // Format the ZonedDateTime to the desired format
         return zonedDateTime.format(outputFormatter);
     }
+
+    public void setListTachesController(ListTachesController listTachesController) {
+        this.listTachesController = listTachesController;
+    }
+
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
+        if (listTachesController != null) {
+            listTachesController.initialize();
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
