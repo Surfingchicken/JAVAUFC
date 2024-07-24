@@ -26,7 +26,6 @@ public class RoleService {
         }
     }
 
-    // RoleListResponse class
     private static class RoleListResponse {
         private List<RoleDTO> role;
 

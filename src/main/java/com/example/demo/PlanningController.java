@@ -55,7 +55,7 @@ public class PlanningController {
             entry.changeEndDate(endDateTime.toLocalDate());
             entry.changeStartTime(startDateTime.toLocalTime());
             entry.changeEndTime(endDateTime.toLocalTime());
-            entry.setId(Long.toString(task.getId()));  // Utiliser l'identifiant comme chaîne
+            entry.setId(Long.toString(task.getId()));
 
             calendar.addEntry(entry);
         }
@@ -63,7 +63,7 @@ public class PlanningController {
 
     private void showTaskDetails(Entry<?> entry) {
         String taskIdStr = entry.getId();
-        Long taskId = Long.parseLong(taskIdStr);  // Convertir l'identifiant en Long
+        Long taskId = Long.parseLong(taskIdStr);
         TacheDTO task = tacheService.getTache(taskId);
         if (task != null) {
             String content = String.format(
@@ -73,7 +73,7 @@ public class PlanningController {
                     task.getDateDebut(),
                     task.getDateFin(),
                     task.getType(),
-                    task.getCreateurTache().getUsername()  // Afficher le créateur au lieu de l'exécuteur
+                    task.getCreateurTache().getUsername()
             );
             Alert alert = new Alert(AlertType.INFORMATION, content, ButtonType.OK);
             alert.setTitle("Détails de la tâche");

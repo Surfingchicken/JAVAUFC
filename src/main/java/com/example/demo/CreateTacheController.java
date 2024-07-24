@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.io.IOException;
 
 import back.java.core.dto.TacheDTO;
 import back.java.core.services.TacheService;
@@ -31,6 +30,7 @@ public class CreateTacheController {
 
     private final TacheService tacheService = new TacheService();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private TacheDTO tacheToUpdate;
 
     @FXML
     private void handleSave(ActionEvent event) {
@@ -40,12 +40,12 @@ public class CreateTacheController {
         String dateFin = dateFinField.getText();
 
         if (validateInputs(name, description, dateDebut, dateFin)) {
-            TacheDTO tacheDTO = new TacheDTO();
+            TacheDTO tacheDTO = tacheToUpdate != null ? tacheToUpdate : new TacheDTO();
             tacheDTO.setNom(name);
             tacheDTO.setDescription(description);
-            tacheDTO.setDateDebut(parseDate(dateDebut)); // Convert to ISO 8601 format
-            tacheDTO.setDateFin(parseDate(dateFin));     // Convert to ISO 8601 format
-            tacheDTO.setType("tache"); // Fixed value
+            tacheDTO.setDateDebut(parseDate(dateDebut));
+            tacheDTO.setDateFin(parseDate(dateFin));
+            tacheDTO.setType("tache");
 
             Long userId = tacheService.getUserId();
             if (userId == null) {
@@ -54,27 +54,35 @@ public class CreateTacheController {
             }
 
             try {
-                // Convert TacheDTO to JSON
-                ObjectNode tacheJson = (ObjectNode) objectMapper.valueToTree(tacheDTO);
-                // Replace executeurTache object with executeur ID
-                tacheJson.put("executeur", userId);
-                // Assuming the createur ID is also needed and retrieved similarly
-                Long createurId = tacheService.getUserId(); // Modify as needed
-                tacheJson.put("createur", createurId);
-                // Remove the "id" field
-                tacheJson.remove("id");
-
-                String payload = tacheJson.toString();
-                tacheService.createTache(payload); // Send JSON string as payload
-
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been created successfully!");
+                if (tacheToUpdate != null) {
+                    // Update existing task
+                    tacheService.updateTache(tacheToUpdate.getId(), tacheDTO);
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been updated successfully!");
+                } else {
+                    // Create new task
+                    ObjectNode tacheJson = (ObjectNode) objectMapper.valueToTree(tacheDTO);
+                    tacheJson.put("executeur", userId);
+                    Long createurId = tacheService.getUserId();
+                    tacheJson.put("createur", createurId);
+                    tacheJson.remove("id");
+                    tacheService.createTache(tacheJson.toString());
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Task has been created successfully!");
+                }
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Service Error", "Failed to create task: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Service Error", "Failed to save task: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Please check your inputs and try again.");
         }
+    }
+
+    public void setTacheForUpdate(TacheDTO tache) {
+        this.tacheToUpdate = tache;
+        nameField.setText(tache.getNom());
+        descriptionArea.setText(tache.getDescription());
+        dateDebutField.setText(formatDate(tache.getDateDebut()));
+        dateFinField.setText(formatDate(tache.getDateFin()));
     }
 
     private boolean validateInputs(String name, String description, String dateDebut, String dateFin) {
@@ -86,7 +94,7 @@ public class CreateTacheController {
 
     private boolean isValidDateTime(String dateTime) {
         try {
-            parseDate(dateTime); // Use custom parser for validation
+            parseDate(dateTime);
             return true;
         } catch (DateTimeParseException e) {
             return false;
@@ -96,15 +104,15 @@ public class CreateTacheController {
     private String parseDate(String dateTime) throws DateTimeParseException {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-
-        // Parse the input date-time string to a LocalDateTime
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, inputFormatter);
+        return localDateTime.format(outputFormatter);
+    }
 
-        // Convert LocalDateTime to ZonedDateTime with UTC offset
-        ZonedDateTime zonedDateTime = localDateTime.atZone(java.time.ZoneOffset.UTC);
-
-        // Format the ZonedDateTime to ISO 8601 format
-        return zonedDateTime.format(outputFormatter);
+    private String formatDate(String dateTime) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTime, inputFormatter);
+        return localDateTime.format(outputFormatter);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

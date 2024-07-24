@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import back.java.core.services.AuthService;
-import com.example.demo.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
@@ -65,7 +63,7 @@ public class AuthControllers implements Initializable {
 
     private void loadMainMenu(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("main_menu.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("main_menu.fxml")));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);

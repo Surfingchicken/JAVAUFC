@@ -50,18 +50,15 @@ public class ListUserController implements Initializable {
     private Predicate<UserDTO> searchPredicate = user -> true;
 
     public ListUserController() {
-        // No-argument constructor
     }
 
     public void setAuthService(AuthService authService) {
         this.authService = authService;
-        System.out.println("AuthService has been set.");
         checkServicesInitialized();
     }
 
     public void setRoleService(RoleService roleService) {
         this.roleService = roleService;
-        System.out.println("RoleService has been set.");
         checkServicesInitialized();
     }
 
@@ -131,8 +128,7 @@ public class ListUserController implements Initializable {
                     if (authService == null) {
                         throw new IllegalStateException("AuthService is not initialized");
                     }
-                    List<UserDTO> users = authService.listUsers(1, 10); // Fetch first page with 10 users
-                    System.out.println("Users fetched: " + users.size()); // Log fetched users count
+                    List<UserDTO> users = authService.listUsers(1, 10);
                     return users;
                 } catch (SecurityException e) {
                     showAlert("Permissions insuffisantes", "Vous n'avez pas les permissions nécessaires pour afficher les utilisateurs.");
@@ -148,7 +144,6 @@ public class ListUserController implements Initializable {
                 List<UserDTO> users = getValue();
                 if (users != null) {
                     userList.setAll(users);
-                    System.out.println("Users loaded into userList: " + userList.size()); // Log loaded users count
                 }
             }
 
@@ -164,7 +159,6 @@ public class ListUserController implements Initializable {
                 alert.showAndWait();
             }
         };
-
         new Thread(task).start();
     }
 
@@ -180,7 +174,6 @@ public class ListUserController implements Initializable {
                     if (roles == null) {
                         throw new NullPointerException("Fetched roles are null");
                     }
-                    System.out.println("Roles fetched: " + roles.size()); // Log fetched roles count
                     return roles;
                 } catch (SecurityException e) {
                     showAlert("Permissions insuffisantes", "Vous n'avez pas les permissions nécessaires pour afficher les rôles.");
@@ -190,7 +183,6 @@ public class ListUserController implements Initializable {
                     return null;
                 }
             }
-
             @Override
             protected void succeeded() {
                 List<RoleDTO> roles = getValue();
@@ -200,10 +192,8 @@ public class ListUserController implements Initializable {
                     for (RoleDTO role : roles) {
                         roleComboBox.getItems().add(role.getName());
                     }
-                    System.out.println("Roles loaded into roleComboBox: " + roleComboBox.getItems().size()); // Log loaded roles count
                 }
             }
-
             @Override
             protected void failed() {
                 Throwable exception = getException();
@@ -219,7 +209,6 @@ public class ListUserController implements Initializable {
 
         new Thread(task).start();
     }
-
     private void updateFilteredData() {
         filteredList.setPredicate(rolePredicate.and(searchPredicate));
     }

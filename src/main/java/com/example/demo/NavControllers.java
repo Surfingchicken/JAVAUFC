@@ -22,8 +22,8 @@ public class NavControllers implements Initializable {
     @FXML
     private SplitPane mainSplitPane;
 
-    private final AuthService authService = new AuthService(); // Initialisation de AuthService
-    private final RoleService roleService = new RoleService(); // Initialisation de RoleService
+    private final AuthService authService = new AuthService();
+    private final RoleService roleService = new RoleService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,11 +38,6 @@ public class NavControllers implements Initializable {
     }
 
     @FXML
-    public void navMeetings(ActionEvent event) throws IOException {
-        loadPage("meetings");
-    }
-
-    @FXML
     public void navProfile(ActionEvent event) throws IOException {
         loadPage("profile");
     }
@@ -50,11 +45,6 @@ public class NavControllers implements Initializable {
     @FXML
     public void navPlanning(ActionEvent event) throws IOException {
         loadPage("planning");
-    }
-
-    @FXML
-    public void navSurveys(ActionEvent event) throws IOException {
-        loadPage("surveys");
     }
     @FXML
     public void navListTaches(ActionEvent actionEvent) throws IOException {
@@ -66,8 +56,8 @@ public class NavControllers implements Initializable {
 
         if ("list_employees".equals(pageName)) {
             ListUserController controller = loader.getController();
-            controller.setAuthService(authService); // Injecter AuthService dans le contrôleur
-            controller.setRoleService(roleService); // Injecter RoleService dans le contrôleur
+            controller.setAuthService(authService);
+            controller.setRoleService(roleService);
         }
 
         mainSplitPane.getItems().set(1, view);

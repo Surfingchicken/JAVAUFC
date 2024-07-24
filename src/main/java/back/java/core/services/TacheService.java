@@ -74,8 +74,6 @@ public class TacheService {
         return tacheDTOList;
     }
 
-
-
     public Long getUserId() {
         String url = API_URL + "/getUserId/";
         try {
