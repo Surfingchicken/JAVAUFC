@@ -20,12 +20,9 @@ public class AuthService {
     public String login(String username, String password) throws Exception {
         try {
             String payload = objectMapper.writeValueAsString(new LoginRequest(username, password));
-            System.out.println("Login Payload: " + payload);
             String response = HttpClientUtil.sendPostRequest(API_URL + "/auth/login", payload, null);
-            System.out.println("Login Response: " + response);
             LoginResponse loginResponse = objectMapper.readValue(response, LoginResponse.class);
             String token = loginResponse.getToken();
-            System.out.println("Token: " + token);
             TokenManager.getInstance().setToken(token);
             return token;
         } catch (Exception e) {
